@@ -53,31 +53,27 @@ class AuthController extends Controller
             'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-
+    
         // Find user by email
         $user = User::where('email', $request->email)->first();
-
+    
         // Check if user exists and password is correct
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'message' => 'Invalid credentials'
-            ], 401); // Unauthorized status
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
-
+    
         // Generate a token
         $token = $user->createToken('API Token')->plainTextToken;
-
+    
         // Return the token and user details
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-            'message' => 'Login successful'
-        ], 200);
+        return response()->json(['user' => $user, 'token' => $token, 'message' => 'Login successful'], 200);
     }
+    
+    
     public function logout(Request $request)
     {
         // Revoke the user's token
